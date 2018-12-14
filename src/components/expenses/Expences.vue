@@ -44,7 +44,7 @@
     </v-toolbar>
     <v-data-table
       :headers="headers"
-      :items="desserts"
+      :items="expences"
       class="elevation-1"
     >
       <template slot="items" slot-scope="props">
@@ -101,7 +101,6 @@
           align: 'center' 
         }
       ],
-      desserts: [],
       editedIndex: -1,
       editedItem: {
         expence_name: 'new name',
@@ -120,6 +119,9 @@
     computed: {
       formTitle () {
         return this.editedIndex === -1 ? 'New Item' : 'Edit Item'
+      },
+      expences() {
+        return this.$store.state.expences;
       }
     },
 
@@ -135,57 +137,31 @@
 
     methods: {
       initialize () {
-        this.desserts = [
-          {
-            expence_name: 'Food',
-            summ: 159,
-            date: '24.12.2018',
-            comment: 'empty comment',
-          },
-          {
-            expence_name: 'Transport',
-            summ: 237,
-            date: '24.12.2018',
-            comment: 'empty comment',
-          },
-          {
-            expence_name: 'Food',
-            summ: 262,
-            date: '24.12.2018',
-            comment: 'empty comment',
-          },
-          {
-            expence_name: 'Food',
-            summ: 305,
-            date: '24.12.2018',
-            comment: 'empty comment',
-          },
-          {
-            expence_name: 'Food',
-            summ: 356,
-            date: '24.12.2018',
-            comment: 'empty comment',
-          },
-          {
-            expence_name: 'Moovie',
-            summ: 375,
-            date: '24.12.2018',
-            comment: 'empty comment',
-          }
-        ]
       },
 
       editItem (item) {
-        this.editedIndex = this.desserts.indexOf(item)
+        this.editedIndex = this.expences.indexOf(item)
         this.editedItem = Object.assign({}, item)
         this.dialog = true
       },
 
       deleteItem (item) {
-        const index = this.desserts.indexOf(item)
-        confirm('Are you sure you want to delete this item?') && this.desserts.splice(index, 1)
+        confirm('Are you sure you want to delete this item?') 
+        && this.$store.dispatch("deleteExpence", item);
       },
-
+      save () {
+        if (this.editedIndex > -1) {
+          let expenceDataToEdit = {
+            editedIndex: this.editedIndex,
+            editedItem: this.editedItem
+          }
+          this.$store.dispatch("editExpence", expenceDataToEdit);
+        } else {
+          let newItem = this.editedItem;
+          this.$store.dispatch("createExpence", this.editedItem);
+        }
+        this.close()
+      },
       close () {
         this.dialog = false
         setTimeout(() => {
@@ -193,15 +169,6 @@
           this.editedIndex = -1
         }, 300)
       },
-
-      save () {
-        if (this.editedIndex > -1) {
-          Object.assign(this.desserts[this.editedIndex], this.editedItem)
-        } else {
-          this.desserts.push(this.editedItem)
-        }
-        this.close()
-      }
     }
   }
 </script>
