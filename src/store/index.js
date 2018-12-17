@@ -19,12 +19,12 @@ export const store = new Vuex.Store({
           align: 'center' },
         { 
           text: 'Date', 
-          value: 'fat',  
+          value: 'date',  
           align: 'center' 
         },
         { 
           text: 'Comment', 
-          value: 'carbs', 
+          value: 'comment', 
           align: 'center' 
         }
       ],
@@ -32,37 +32,37 @@ export const store = new Vuex.Store({
         {
           expence_name: 'Food',
           summ: 159,
-          date: '24.12.2018',
+          date: '2019-01-01',
           comment: 'empty comment',
         },
         {
           expence_name: 'Transport',
           summ: 237,
-          date: '24.12.2018',
+          date: '2019-01-01',
           comment: 'empty comment',
         },
         {
           expence_name: 'Food',
           summ: 262,
-          date: '24.12.2018',
+          date: '2019-01-01',
           comment: 'empty comment',
         },
         {
           expence_name: 'Food',
           summ: 305,
-          date: '24.12.2018',
+          date: '2019-01-01',
           comment: 'empty comment',
         },
         {
           expence_name: 'Food',
           summ: 356,
-          date: '24.12.2018',
+          date: '2019-01-01',
           comment: 'empty comment',
         },
         {
           expence_name: 'Moovie',
           summ: 375,
-          date: '24.12.2018',
+          date: '2019-01-01',
           comment: 'empty comment',
         },
       ],

@@ -25,7 +25,22 @@
                   <v-text-field v-model="editedItem.summ" label="Summ"></v-text-field>
                 </v-flex>
                 <v-flex xs12 sm6 md4>
-                  <v-text-field v-model="editedItem.date" label="Date"></v-text-field>
+                  <v-menu
+                        v-model="menu1"
+                        full-width
+                        max-width="290"
+                      >
+                        <v-text-field
+                          slot="activator"
+                          clearable
+                          readonly
+                          v-model="editedItem.date" label="Date"
+                        ></v-text-field>
+                        <v-date-picker
+                          v-model="editedItem.date"
+                          @change="menu1 = false"
+                        ></v-date-picker>
+                    </v-menu>
                 </v-flex>
                 <v-flex xs12 sm6 md4>
                   <v-text-field v-model="editedItem.comment" label="Comment"></v-text-field>
@@ -78,6 +93,8 @@
 <script>
   export default {
     data: () => ({
+      date: new Date().toISOString().substr(0, 10),
+      menu1: false,
       dialog: false,
       headers: [
         {
@@ -105,14 +122,14 @@
       editedItem: {
         expence_name: 'new name',
         summ: 0,
-        date: 0,
-        comment: 0,
+        date: '2019-01-01',
+        comment: '',
       },
       defaultItem: {
         expence_name: 'new name',
         summ: 0,
-        date: 0,
-        comment: 0,
+        date: '2019-01-01',
+        comment: '',
       }
     }),
 
