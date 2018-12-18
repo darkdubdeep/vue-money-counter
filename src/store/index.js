@@ -5,7 +5,7 @@ Vue.use(Vuex)
 
 export const store = new Vuex.Store({
   state: {
-    dialog: false,
+    editDialogWindowIsOpened: false,
     headers: [
         {
           text: 'Expence name',
@@ -83,6 +83,10 @@ export const store = new Vuex.Store({
     createExpence(state, payload) {
       state.expences.push(payload);
     },
+    ChangeEditDialogModalState(state, payload) {
+        state.editDialogWindowIsOpened = payload
+        console.log(state.editDialogWindowIsOpened);
+    },
     editExpence(state, payload) {
       Object.assign(state.expences[payload.editedIndex], payload.editedItem)
     },
@@ -90,6 +94,7 @@ export const store = new Vuex.Store({
       const index = state.expences.indexOf(payload);
       state.expences.splice(index, 1)
     },
+
   },
   actions: {
     createExpence({commit, getters}, payload) {

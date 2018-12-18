@@ -38,16 +38,13 @@
               </v-layout>
             </v-container>
           </v-card-text>
-
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="blue darken-1" flat @click="close">Cancel</v-btn>
+            <v-btn color="blue darken-1" flat @click="dialog = false">Cancel</v-btn>
             <v-btn color="blue darken-1" flat @click="save">Save</v-btn>
           </v-card-actions>
-
         </v-card>
       </v-dialog>
-
 </template>
 
 <script>
@@ -73,17 +70,10 @@ export default {
         val || this.close()
       }
     },
-
-    created () {
-      this.initialize()
-    },
     methods: {
-      initialize () {
-      },
-
       createExpence(item){
-          newExpence = Object.assign({}, item)
-          this.dialog = true
+        newExpence = Object.assign({}, item)
+        this.dialog = true
       },
       save () {
         this.$store.dispatch("createExpence", this.newExpence);
