@@ -72,7 +72,6 @@
       },
       editItem (item) {
         this.editedIndex = this.expences.indexOf(item);
-        console.log(this.editedIndex);
         this.expenceToEdit = item;
         this.$store.commit('ChangeEditDialogModalState', true)
       },

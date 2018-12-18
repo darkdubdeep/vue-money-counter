@@ -8,31 +8,33 @@
             <v-container grid-list-md>
               <v-layout wrap>
                 <v-flex xs12 sm6 md4>
-                  <v-text-field v-model="item.expence_name" label="Expence name"></v-text-field>
+                  <v-text-field v-model="editableItem.expence_name" label="Expence name"></v-text-field>
                 </v-flex>
                 <v-flex xs12 sm6 md4>
-                  <v-text-field v-model="item.summ" label="Summ"></v-text-field>
+                  <v-text-field v-model="editableItem.summ" label="Summ"></v-text-field>
                 </v-flex>
                 <v-flex xs12 sm6 md4>
                   <v-menu
                         v-model="datePicker"
                         full-width
                         max-width="290"
+                        :close-on-content-click="false"
+
                       >
                         <v-text-field
                           slot="activator"
                           clearable
                           readonly
-                          v-model="item.date" label="Date"
+                          v-model="editableItem.date" label="Date"
                         ></v-text-field>
                         <v-date-picker
-                          v-model="item.date"
+                          v-model="editableItem.date"
                           @change="datePicker = false"
                         ></v-date-picker>
                     </v-menu>
                 </v-flex>
                 <v-flex xs12 sm6 md4>
-                  <v-text-field v-model="item.comment" label="Comment"></v-text-field>
+                  <v-text-field v-model="editableItem.comment" label="Comment"></v-text-field>
                 </v-flex>
               </v-layout>
             </v-container>
@@ -49,6 +51,7 @@
 <script>
 export default {
     props:['item', 'editedIndex'],
+    editableItem:{},
     data: () => ({
       datePicker: false,
     }),
@@ -60,11 +63,14 @@ export default {
         return this.$store.state.editDialogWindowIsOpened;
       }
     },
+    created(){
+        this.editableItem = Object.assign({}, this.item)
+    },
     methods: {
       save () {
         let expenceDataToEdit = {
           editedIndex: this.editedIndex,
-          editedItem: this.item
+          editedItem: this.editableItem
         }
         this.$store.dispatch("editExpence", expenceDataToEdit);
         this.close()

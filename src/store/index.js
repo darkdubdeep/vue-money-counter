@@ -16,7 +16,8 @@ export const store = new Vuex.Store({
         { 
           text: 'Summ', 
           value: 'summ', 
-          align: 'center' },
+          align: 'center' 
+        },
         { 
           text: 'Date', 
           value: 'date',  
@@ -84,8 +85,7 @@ export const store = new Vuex.Store({
       state.expences.push(payload);
     },
     ChangeEditDialogModalState(state, payload) {
-        state.editDialogWindowIsOpened = payload
-        console.log(state.editDialogWindowIsOpened);
+      state.editDialogWindowIsOpened = payload
     },
     editExpence(state, payload) {
       Object.assign(state.expences[payload.editedIndex], payload.editedItem)
