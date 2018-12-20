@@ -65,16 +65,7 @@ export default {
         comment: '',
       }
     }),
-    watch: {
-      dialog (val) {
-        val || this.close()
-      }
-    },
     methods: {
-      createExpence(item){
-        newExpence = Object.assign({}, item)
-        this.dialog = true
-      },
       save () {
         this.$store.dispatch("createExpence", this.newExpence);
         this.newExpence = Object.assign({}, this.defaultExpence)
@@ -84,6 +75,5 @@ export default {
         this.dialog = false
       },
     }
-
 }
 </script>

@@ -1,6 +1,6 @@
 <template>
     <v-dialog v-model="dialog" max-width="500px">
-        <v-card>
+        <v-card v-if="editableItem">
           <v-card-title>
             <span class="headline">Edit Expence</span>
           </v-card-title>
@@ -50,21 +50,17 @@
 
 <script>
 export default {
-    props:['item', 'editedIndex'],
-    editableItem:{},
+    props:['editedIndex'],
     data: () => ({
       datePicker: false,
     }),
     computed: {
-      expences() {
-        return this.$store.state.expences;
-      },
       dialog() {
         return this.$store.state.editDialogWindowIsOpened;
+      },
+      editableItem() {
+        return this.$store.state.editableItem;
       }
-    },
-    created(){
-        this.editableItem = Object.assign({}, this.item)
     },
     methods: {
       save () {
@@ -72,11 +68,11 @@ export default {
           editedIndex: this.editedIndex,
           editedItem: this.editableItem
         }
-        this.$store.dispatch("editExpence", expenceDataToEdit);
+        this.$store.dispatch("saveChangesToEditedExpence", expenceDataToEdit);
         this.close()
       },
       close() {
-        this.$store.commit("ChangeEditDialogModalState", false)
+        this.$store.commit("changeEditDialogModalState", false)
       },
     }
 }
