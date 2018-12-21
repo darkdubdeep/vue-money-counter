@@ -38,7 +38,7 @@ export const store = new Vuex.Store({
         {
           expence_name: 'Transport',
           summ: 237,
-          date: '2018-10-01',
+          date: '2018-10-21',
           comment: 'empty comment',
         },
         {
@@ -50,7 +50,7 @@ export const store = new Vuex.Store({
         {
           expence_name: 'Food',
           summ: 159,
-          date: '2018-02-01',
+          date: '2018-12-15',
           comment: 'empty comment',
         },
         {
