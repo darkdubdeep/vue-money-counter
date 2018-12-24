@@ -56,16 +56,17 @@ export const store = new Vuex.Store({
         {
           expence_name: 'Transport',
           summ: 237,
-          date: '2018-11-01',
+          date: '2019-11-01',
           comment: 'empty comment',
         },
         {
           expence_name: 'Food',
           summ: 262,
-          date: '2018-12-01',
+          date: '2019-12-01',
           comment: 'empty comment',
         }
       ],
+      filteredByDateExpences:[],
       editDialogWindowIsOpened: false,
       editableItem: {}
   },
@@ -85,11 +86,38 @@ export const store = new Vuex.Store({
     deleteExpence(state, payload) {
       const index = state.expences.indexOf(payload);
       state.expences.splice(index, 1)
-    }
+    },
+    getCurrenthMonthExpences(state){
+      let date = new Date();
+      let currentMonthDate = 
+        new Date(date.getFullYear(), date.getMonth(), 1)
+        .toISOString().substr(0, 10);
+        state.filteredByDateExpences = state.expences.filter (
+         expence => expence.date > currentMonthDate
+        )
+    },
+    getLastTreMonthsExpences(state){
+      let date = new Date();
+      let lastTreeMonthDate = 
+      new Date(date.getFullYear(), date.getMonth()-2, date.getDate())
+      .toISOString().substr(0, 10);
+      state.filteredByDateExpences = state.expences.filter (
+       expence => expence.date > lastTreeMonthDate
+      )
+    },
+    getCurrentYearExpences(state){
+      let currentYear = new Date().toISOString().substr(0, 4);
+      state.filteredByDateExpences = state.expences.filter (
+        expence => expence.date.substr(0, 4) === currentYear
+      )
+    },
+    getAllExpences(state){
+      state.filteredByDateExpences = state.expences;
+    },
   },
   getters:{
-    currenthMonthExpences: state => {
-      return state.expences
+    filteredByDateExpences: state => {
+      return state.filteredByDateExpences
     }
   },
   actions: {

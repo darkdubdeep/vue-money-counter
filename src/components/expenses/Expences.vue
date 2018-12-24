@@ -48,7 +48,7 @@
         <h3 class="mt-4 mb-4 text-uppercase"  absolute>Total: 1111 $</h3>
         <v-btn color="primary" @click="getAllExpences">All</v-btn>
         <v-btn color="primary" @click="getCurrenthMonthExpences">Currenth month</v-btn>
-        <v-btn color="primary" @click="getLastTreMonthExpences">Current three months</v-btn>
+        <v-btn color="primary" @click="getLastTreMonthsExpences">Current three months</v-btn>
         <v-btn color="primary" @click="getCurrentYearExpences">Current year</v-btn>
       </div>
   </div>
@@ -65,7 +65,9 @@
         return this.$store.state.headers;
       },
       expences() {
-        return this.$store.state.expences;
+        return this.$store.getters.filteredByDateExpences.length 
+        ? this.$store.getters.filteredByDateExpences 
+        : this.$store.state.expences;
       }
     },
 
@@ -86,37 +88,16 @@
         && this.$store.dispatch("deleteExpence", item);
       },
       getAllExpences(){
-         let allExpences = this.expences;
-         console.log(allExpences);
+        this.$store.commit('getAllExpences')
       },
       getCurrenthMonthExpences(){
-        let date = new Date();
-        let currentMonthDate = 
-          new Date(date.getFullYear(), date.getMonth(), 1)
-          .toISOString().substr(0, 10);
-          let filteredExpences = this.expences.filter (
-           expence => expence.date > currentMonthDate
-          )
-          console.log(filteredExpences);
+        this.$store.commit('getCurrenthMonthExpences')
       },
-      getLastTreMonthExpences(){
-          let date = new Date();
-          let lastTreeMonthDate = 
-          new Date(date.getFullYear(), date.getMonth()-2, date.getDate())
-          .toISOString().substr(0, 10);
-          let filteredExpences = this.expences.filter (
-           expence => expence.date > lastTreeMonthDate
-          )
-          console.log(lastTreeMonthDate);
-          console.log(filteredExpences);
+      getLastTreMonthsExpences(){
+        this.$store.commit('getLastTreMonthsExpences')
       },
       getCurrentYearExpences(){
-          let currentYear = new Date().toISOString().substr(0, 4);
-          console.log(currentYear);
-          let filteredExpences = this.expences.filter (
-            expence => expence.date.substr(0, 4) === currentYear
-          )
-          console.log(filteredExpences)
+        this.$store.commit('getCurrentYearExpences')
       }
     }
   }
