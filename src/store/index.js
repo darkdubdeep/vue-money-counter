@@ -93,8 +93,9 @@ export const store = new Vuex.Store({
       Object.assign(state.expences[foundExpenceIndex], payload.editedItem)
     },
     deleteExpence(state, payload) {
-      const index = state.expences.indexOf(payload);
-      state.expences.splice(index, 1)
+      let foundExpenceIndex = state.expences.findIndex(
+        item => item.id == payload.id);
+      state.expences.splice(foundExpenceIndex, 1)
     },
     getCurrenthMonthExpences(state){
       let currentYear = new Date().toISOString().substr(0, 4);
