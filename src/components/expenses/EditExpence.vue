@@ -68,6 +68,7 @@ export default {
           editedIndex: this.editedIndex,
           editedItem: this.editableItem
         }
+        console.log(expenceDataToEdit);
         this.$store.dispatch("saveChangesToEditedExpence", expenceDataToEdit);
         this.close()
       },

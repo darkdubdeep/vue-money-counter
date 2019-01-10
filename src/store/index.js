@@ -68,7 +68,8 @@ export const store = new Vuex.Store({
       ],
       filteredByDateExpences:[],
       editDialogWindowIsOpened: false,
-      editableItem: {}
+      editableItem: {},
+      totalSumm:0
   },
   mutations: {
     createExpence(state, payload) {
@@ -88,12 +89,13 @@ export const store = new Vuex.Store({
       state.expences.splice(index, 1)
     },
     getCurrenthMonthExpences(state){
+      let currentYear = new Date().toISOString().substr(0, 4);
       let date = new Date();
       let currentMonthDate = 
         new Date(date.getFullYear(), date.getMonth(), 1)
         .toISOString().substr(0, 10);
         state.filteredByDateExpences = state.expences.filter (
-         expence => expence.date > currentMonthDate
+         expence => expence.date.substr(0, 4) === currentYear && expence.date > currentMonthDate
         )
     },
     getLastTreMonthsExpences(state){

@@ -45,7 +45,7 @@
       </template>
     </v-data-table>
       <div class="text-xs-center pt-2">
-        <h3 class="mt-4 mb-4 text-uppercase"  absolute>Total: 1111 $</h3>
+        <h3 class="mt-4 mb-4 text-uppercase" absolute>Total: {{totalSumm}} $</h3>
         <v-btn color="primary" @click="getAllExpences">All</v-btn>
         <v-btn color="primary" @click="getCurrenthMonthExpences">Currenth month</v-btn>
         <v-btn color="primary" @click="getLastTreMonthsExpences">Current three months</v-btn>
@@ -68,6 +68,13 @@
         return this.$store.getters.filteredByDateExpences.length 
         ? this.$store.getters.filteredByDateExpences 
         : this.$store.state.expences;
+      },
+      totalSumm() {
+        let totalSumm = 0;
+        for(let i = 0, len = this.expences.length; i < len; i++){
+          totalSumm += parseInt(this.expences[i].summ);
+        }
+        return totalSumm
       }
     },
 
