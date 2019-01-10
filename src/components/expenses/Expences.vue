@@ -58,13 +58,15 @@
   export default {
     data: () => ({
       editedIndex: -1,
-      curentMonth: new Date().getMonth() + 1
+      curentMonth: new Date().getMonth() + 1,
+      sorting: ''
     }),
     computed: {
       headers() {
         return this.$store.state.headers;
       },
       expences() {
+        console.log(this.$store.state.expences);
         return this.$store.getters.filteredByDateExpences.length 
         ? this.$store.getters.filteredByDateExpences 
         : this.$store.state.expences;

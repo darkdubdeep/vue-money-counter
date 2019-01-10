@@ -30,36 +30,42 @@ export const store = new Vuex.Store({
       ],
       expences: [
         {
+          id:"1",
           expence_name: 'Food',
           summ: 159,
           date: '2018-01-01',
           comment: 'empty comment',
         },
         {
+          id:"2",
           expence_name: 'Transport',
           summ: 237,
           date: '2018-10-21',
           comment: 'empty comment',
         },
         {
+          id:"3",
           expence_name: 'Food',
           summ: 262,
           date: '2018-10-01',
           comment: 'empty comment',
         },
         {
+          id:"4",
           expence_name: 'Food',
           summ: 159,
           date: '2018-12-15',
           comment: 'empty comment',
         },
         {
+          id:"5",
           expence_name: 'Transport',
           summ: 237,
           date: '2019-11-01',
           comment: 'empty comment',
         },
         {
+          id:"6",
           expence_name: 'Food',
           summ: 262,
           date: '2019-12-01',

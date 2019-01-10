@@ -54,6 +54,7 @@ export default {
       dialog: false,
       newExpence: {
         expence_name: '',
+        id: new Date().valueOf(), 
         summ: null,
         date: '',
         comment: '',
