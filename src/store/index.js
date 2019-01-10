@@ -88,7 +88,9 @@ export const store = new Vuex.Store({
         state.editableItem = Object.assign({}, payload);
     },
     saveChangesToEditedExpence(state, payload) {
-      Object.assign(state.expences[payload.editedIndex], payload.editedItem)
+      let foundExpenceIndex = state.expences.findIndex(
+        item => item.id == payload.editedItem.id);
+      Object.assign(state.expences[foundExpenceIndex], payload.editedItem)
     },
     deleteExpence(state, payload) {
       const index = state.expences.indexOf(payload);

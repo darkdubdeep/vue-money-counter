@@ -50,7 +50,7 @@
 
 <script>
 export default {
-    props:['editedIndex'],
+    props:['editedId'],
     data: () => ({
       datePicker: false,
     }),
@@ -65,7 +65,7 @@ export default {
     methods: {
       save () {
         let expenceDataToEdit = {
-          editedIndex: this.editedIndex,
+          editedId: this.editedId,
           editedItem: this.editableItem
         }
         console.log(expenceDataToEdit);

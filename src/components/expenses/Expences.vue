@@ -11,7 +11,7 @@
 
       <create-expence-dialog></create-expence-dialog>
 
-      <edit-expence-dialog :editedIndex="editedIndex"></edit-expence-dialog>
+      <edit-expence-dialog :editedId="editedId"></edit-expence-dialog>
 
     </v-toolbar>
     <v-data-table
@@ -57,7 +57,7 @@
 <script>
   export default {
     data: () => ({
-      editedIndex: -1,
+      editedId: '',
       curentMonth: new Date().getMonth() + 1,
       sorting: ''
     }),
@@ -88,7 +88,7 @@
       initialize () {
       },
       editItem (item) {
-        this.editedIndex = this.expences.indexOf(item);
+        this.editedId = item.id;
         this.$store.commit('changeEditDialogModalState', true);
         this.$store.commit('createEditableItem', item);
       },
