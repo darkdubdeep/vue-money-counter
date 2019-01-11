@@ -75,9 +75,17 @@ export const store = new Vuex.Store({
       filteredByDateExpences:[],
       editDialogWindowIsOpened: false,
       editableItem: {},
+      registered: false,
+      logged: false,
       totalSumm:0
   },
   mutations: {
+    register(state, payload){
+      state.registered = payload
+    },
+    login(state, payload){
+      state.logged = payload
+    },
     createExpence(state, payload) {
       state.expences.push(payload);
     },
@@ -132,6 +140,12 @@ export const store = new Vuex.Store({
     }
   },
   actions: {
+    register({commit, getters},payload){
+      commit('register', payload)
+    },
+    login({commit, getters}, payload) {
+      commit('login', payload)
+    },
     createExpence({commit, getters}, payload) {
       commit("createExpence", payload)
     },
