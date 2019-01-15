@@ -8,8 +8,7 @@
       <v-spacer></v-spacer>
       <v-btn
         flat
-        href="https://github.com/vuetifyjs/vuetify/releases/latest"
-        target="_blank"
+        @click="logOut"
       >
         <span class="mr-2">LOGOUT</span>
       </v-btn>
@@ -28,6 +27,12 @@ import Expences from './expenses/Expences'
     },
     data () {
       return {
+      }
+    },
+    methods: {
+      logOut () {
+      this.$store.dispatch('logout', false);
+      this.$router.replace('/');
       }
     }
   }

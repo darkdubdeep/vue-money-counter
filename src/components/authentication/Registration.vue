@@ -30,7 +30,7 @@
         ></v-text-field>
         <div class="text-xs-right">
           <v-btn @click="clear">cancel</v-btn>
-          <v-btn @click="Register" color ="info" >Register</v-btn>
+          <v-btn @click="register" color ="info" >Register</v-btn>
         </div>
       </form>
       <p>If you allready have an account, please<router-link to='/'> Login</router-link> </p>
@@ -83,17 +83,25 @@
         if (!this.$v.repeatPassword.$dirty) return errors
         !this.$v.repeatPassword.sameAsPassword && errors.push('Password must be identical.')
         return errors
+      },
+      user() {
+        return this.$store.getters.user;
+      }
+    },
+    watch: {
+    user(value) {
+      if (value !== null && value !== undefined) {
+        this.$router.push("/home");
+        }
       }
     },
     methods: {
-      Register() {
+      register() {
         this.$v.$touch()
         if (!this.emailErrors.length && 
         !this.passwordErrors.length && 
         !this.repeatPasswordErrors.length) {
             this.$store.dispatch('register', true)
-            console.log(this.registered)
-            this.$router.replace('/home')
         }
       },
       clear () {

@@ -5,6 +5,7 @@ Vue.use(Vuex)
 
 export const store = new Vuex.Store({
   state: {
+    user: null,
     headers: [
         {
           text: 'Expence name',
@@ -20,7 +21,7 @@ export const store = new Vuex.Store({
         { 
           text: 'Date', 
           value: 'date',  
-          align: 'center' 
+          align: 'center'
         },
         { 
           text: 'Comment', 
@@ -28,7 +29,7 @@ export const store = new Vuex.Store({
           align: 'center' 
         }
       ],
-      expences: [
+    expences: [
         {
           id:"1",
           expence_name: 'Food',
@@ -80,6 +81,9 @@ export const store = new Vuex.Store({
       totalSumm:0
   },
   mutations: {
+    setUser(state, payload) {
+      state.user = payload;
+    },
     register(state, payload){
       state.registered = payload
     },
@@ -135,16 +139,27 @@ export const store = new Vuex.Store({
     },
   },
   getters:{
+    user(state) {
+      return state.user;
+    },
     filteredByDateExpences: state => {
       return state.filteredByDateExpences
     }
   },
   actions: {
-    register({commit, getters},payload){
+    register({commit},payload){
+      commit("setUser", payload);
       commit('register', payload)
     },
     login({commit, getters}, payload) {
+      commit("setUser", payload)
       commit('login', payload)
+    },
+    logout({commit}){
+      commit("setUser", null);
+    },
+    autoSignIn({ commit }, payload) {
+      commit("setUser", { id: payload.uid });
     },
     createExpence({commit, getters}, payload) {
       commit("createExpence", payload)
