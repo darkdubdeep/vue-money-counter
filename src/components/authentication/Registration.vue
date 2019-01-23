@@ -84,14 +84,14 @@
         !this.$v.repeatPassword.sameAsPassword && errors.push('Password must be identical.')
         return errors
       },
-      user() {
-        return this.$store.getters.user;
+      userRegistration() {
+        return this.$store.getters.userRegistration;
       }
     },
     watch: {
-    user(value) {
-      if (value !== null && value !== undefined) {
-        this.$router.push("/home");
+    userRegistration(value) {
+      if (value === true ) {
+        this.$router.push("/");
         }
       }
     },
@@ -101,7 +101,15 @@
         if (!this.emailErrors.length && 
         !this.passwordErrors.length && 
         !this.repeatPasswordErrors.length) {
-            this.$store.dispatch('register', true)
+
+            const dataForLogin = {
+              username:this.email,
+              password:this.password
+            }
+
+            console.log(dataForLogin);
+
+            this.$store.dispatch('register', dataForLogin)
         }
       },
       clear () {

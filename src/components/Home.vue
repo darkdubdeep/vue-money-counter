@@ -31,7 +31,7 @@ import Expences from './expenses/Expences'
     },
     methods: {
       logOut () {
-      this.$store.dispatch('logout', false);
+      this.$store.dispatch('logout');
       this.$router.replace('/');
       }
     }

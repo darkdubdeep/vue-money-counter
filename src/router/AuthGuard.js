@@ -1,7 +1,7 @@
 import { store } from "../store";
 
 export default (to, from, next) => {
-  if (store.state.user) {
+  if (store.state.userToken) {
     next();
   } else {
     next("/");

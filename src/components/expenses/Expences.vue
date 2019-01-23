@@ -46,7 +46,7 @@
     </v-data-table>
       <div class="text-xs-center pt-2">
         <h3 class="mt-4 mb-4 text-uppercase" absolute>Total: {{totalSumm}} $</h3>
-        <v-btn color="primary" @click="getAllExpences">All</v-btn>
+        <v-btn color="primary" @click="resetExpencesDateFilter">All</v-btn>
         <v-btn color="primary" @click="getCurrenthMonthExpences">Currenth month</v-btn>
         <v-btn color="primary" @click="getLastTreMonthsExpences">Current three months</v-btn>
         <v-btn color="primary" @click="getCurrentYearExpences">Current year</v-btn>
@@ -81,7 +81,9 @@
     },
 
     created () {
-      this.initialize()
+      this.initialize();
+      this.$store.dispatch("getExpences");
+
     },
 
     methods: {
@@ -96,9 +98,6 @@
         confirm('Are you sure you want to delete this item?') 
         && this.$store.dispatch("deleteExpence", item);
       },
-      getAllExpences(){
-        this.$store.commit('getAllExpences')
-      },
       getCurrenthMonthExpences(){
         this.$store.commit('getCurrenthMonthExpences')
       },
@@ -107,7 +106,10 @@
       },
       getCurrentYearExpences(){
         this.$store.commit('getCurrentYearExpences')
-      }
+      },
+      resetExpencesDateFilter(){
+        this.$store.commit('resetExpencesDateFilter')
+      },
     }
   }
 </script>

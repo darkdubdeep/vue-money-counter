@@ -78,7 +78,12 @@
       logIn() {
         this.$v.$touch()
         if (!this.emailErrors.length && !this.passwordErrors.length) {
-            this.$store.dispatch('login', true);
+            const dataForLogin = {
+              username:this.email,
+              password:this.password
+            }
+            console.log(dataForLogin)
+            this.$store.dispatch('login', dataForLogin);
         }
         
       },

@@ -1,11 +1,16 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import axios from 'axios'
 
 Vue.use(Vuex)
 
+const developUrl = 'http://192.168.99.100/api';
+
+axios.defaults.baseURL = developUrl;
+
 export const store = new Vuex.Store({
   state: {
-    user: null,
+    userToken: localStorage.getItem('access_token') || null,
     headers: [
         {
           text: 'Expence name',
@@ -29,50 +34,7 @@ export const store = new Vuex.Store({
           align: 'center' 
         }
       ],
-    expences: [
-        {
-          id:"1",
-          expence_name: 'Food',
-          summ: 159,
-          date: '2018-01-01',
-          comment: 'empty comment',
-        },
-        {
-          id:"2",
-          expence_name: 'Transport',
-          summ: 237,
-          date: '2018-10-21',
-          comment: 'empty comment',
-        },
-        {
-          id:"3",
-          expence_name: 'Food',
-          summ: 262,
-          date: '2018-10-01',
-          comment: 'empty comment',
-        },
-        {
-          id:"4",
-          expence_name: 'Food',
-          summ: 159,
-          date: '2018-12-15',
-          comment: 'empty comment',
-        },
-        {
-          id:"5",
-          expence_name: 'Transport',
-          summ: 237,
-          date: '2019-11-01',
-          comment: 'empty comment',
-        },
-        {
-          id:"6",
-          expence_name: 'Food',
-          summ: 262,
-          date: '2019-12-01',
-          comment: 'empty comment',
-        }
-      ],
+      expences:[],
       filteredByDateExpences:[],
       editDialogWindowIsOpened: false,
       editableItem: {},
@@ -82,13 +44,16 @@ export const store = new Vuex.Store({
   },
   mutations: {
     setUser(state, payload) {
-      state.user = payload;
+      state.userToken = payload;
     },
     register(state, payload){
       state.registered = payload
     },
     login(state, payload){
-      state.logged = payload
+      state.userToken = payload;
+    },
+    logout(state) {
+      state.userToken = null;
     },
     createExpence(state, payload) {
       state.expences.push(payload);
@@ -108,6 +73,9 @@ export const store = new Vuex.Store({
       let foundExpenceIndex = state.expences.findIndex(
         item => item.id == payload.id);
       state.expences.splice(foundExpenceIndex, 1)
+    },
+    getExpences(state, payload) {
+      state.expences = payload;
     },
     getCurrenthMonthExpences(state){
       let currentYear = new Date().toISOString().substr(0, 4);
@@ -134,32 +102,86 @@ export const store = new Vuex.Store({
         expence => expence.date.substr(0, 4) === currentYear
       )
     },
-    getAllExpences(state){
+    resetExpencesDateFilter(state){
       state.filteredByDateExpences = state.expences;
     },
   },
-  getters:{
-    user(state) {
-      return state.user;
-    },
-    filteredByDateExpences: state => {
-      return state.filteredByDateExpences
-    }
-  },
   actions: {
-    register({commit},payload){
-      commit("setUser", payload);
-      commit('register', payload)
+    register({commit}, payload){
+
+      axios.post('/register',
+      { 
+        name:'empthy name',
+        email:payload.username,
+        username: payload.username,
+        password: payload.password
+      }
+      ).then(responce=>{
+
+        commit('register', true)
+        
+      }).catch(error => {
+        console.log(error);
+      })
     },
     login({commit, getters}, payload) {
-      commit("setUser", payload)
-      commit('login', payload)
+      axios.post('/login',
+      { 
+        username:payload.username,
+        password:payload.password
+      }
+      ).then(responce=>{
+
+        const token = responce.data.access_token;
+
+        localStorage.setItem('access_token', token);
+
+        commit('login', token)
+        
+      }).catch(error => {
+        console.log(error);
+      })
     },
-    logout({commit}){
-      commit("setUser", null);
+    logout({commit, getters}){
+
+      // axios.defaults.headers.common['Authorization'] = 'Bearer ' + state.userToken;
+
+
+      if(getters.user){
+
+        axios.post('/logout', 
+
+        { headers: {"Authorization" : `Bearer ${this.state.userToken}`} }).then(responce=>{
+
+          localStorage.removeItem('access_token');
+
+          commit('logout');
+
+        }).catch(error => {
+
+          console.log(error);
+        })
+      }
     },
     autoSignIn({ commit }, payload) {
-      commit("setUser", { id: payload.uid });
+      commit("setUser", true);
+    },
+    getExpences({commit}) {
+
+      axios.get('/expences',
+
+      { headers: {"Authorization" : `Bearer ${this.state.userToken}`} }
+
+      ).then(responce=>{
+
+        console.log(responce.data);
+
+        commit('getExpences', responce.data)
+
+      }).catch(error => {
+
+        console.log(error);
+      })
     },
     createExpence({commit, getters}, payload) {
       commit("createExpence", payload)
@@ -170,5 +192,16 @@ export const store = new Vuex.Store({
     deleteExpence({commit, getters},payload) {
       commit("deleteExpence", payload);
     }
-  }
+  },
+  getters:{
+    user(state) {
+      return state.userToken;
+    },
+    userRegistration(state) {
+      return state.registered
+    },
+    filteredByDateExpences: state => {
+      return state.filteredByDateExpences
+    }
+  },
 })
