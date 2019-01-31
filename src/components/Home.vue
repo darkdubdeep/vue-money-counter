@@ -13,8 +13,13 @@
         <span class="mr-2">LOGOUT</span>
       </v-btn>
     </v-toolbar>
-    <v-container>
-      <Expences></Expences>
+    <v-container fluid class="expences-conteiner">
+      <div  v-if="loading === true" > 
+          <preloader-component></preloader-component>
+      </div>
+      <v-container>
+        <Expences></Expences>
+      </v-container>
     </v-container>
 </div>
 </template>
@@ -34,10 +39,17 @@ import Expences from './expenses/Expences'
       this.$store.dispatch('logout');
       this.$router.replace('/');
       }
+    },
+    computed: {
+      loading(){
+        return this.$store.getters.loading;
+      }
     }
   }
 </script>
 
 <style>
-
+.expences-conteiner {
+    padding:0;
+}
 </style>

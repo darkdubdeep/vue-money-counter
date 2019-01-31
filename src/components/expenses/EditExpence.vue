@@ -1,5 +1,5 @@
 <template>
-    <v-dialog v-model="dialog" max-width="500px">
+    <v-dialog v-model="dialog" max-width="500px" persistent>
         <v-card v-if="editableItem">
           <v-card-title>
             <span class="headline">Edit Expence</span>
@@ -8,7 +8,7 @@
             <v-container grid-list-md>
               <v-layout wrap>
                 <v-flex xs12 sm6 md4>
-                  <v-text-field v-model="editableItem.expence_name" label="Expence name"></v-text-field>
+                  <v-text-field v-model="editableItem.title" label="Expence name"></v-text-field>
                 </v-flex>
                 <v-flex xs12 sm6 md4>
                   <v-text-field v-model="editableItem.summ" label="Summ"></v-text-field>

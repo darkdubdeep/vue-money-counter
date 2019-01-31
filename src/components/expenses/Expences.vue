@@ -13,6 +13,38 @@
 
       <edit-expence-dialog :editedId="editedId"></edit-expence-dialog>
 
+       <v-dialog
+      v-model="dialog"
+      max-width="250"
+      >
+      <v-card>
+            <v-card-text class="text-xs-center subheading">
+              Are you sure ?
+            </v-card-text>
+            <v-card-actions>
+              <v-btn
+                color="primary"
+                flat="flat"
+                outline 
+                @click="dialog = false"
+                small
+              >
+                Cancel
+              </v-btn>
+              <v-spacer></v-spacer>
+              <v-btn
+                color="error"
+                flat="flat"
+                outline
+                @click="deleteItem(itemToDelete)"
+                small
+              >
+                Yes
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+      </v-dialog>
+
     </v-toolbar>
     <v-data-table
       :headers="headers"
@@ -20,7 +52,7 @@
       class="elevation-1"
     >
       <template slot="items" slot-scope="props">
-        <td class="text-xs-center">{{ props.item.expence_name }}</td>
+        <td class="text-xs-center">{{ props.item.title }}</td>
         <td class="text-xs-center">{{ props.item.summ }} $</td>
         <td class="text-xs-center">{{ props.item.date }}</td>
         <td class="text-xs-center">{{ props.item.comment }}</td>
@@ -34,14 +66,14 @@
           </v-icon>
           <v-icon
             small
-            @click="deleteItem(props.item)"
+            @click="showDeleteDialog(props.item)"
           >
             delete
           </v-icon>
         </td>
       </template>
       <template slot="no-data">
-        <v-btn color="primary" @click="initialize">Reset</v-btn>
+        no expences 
       </template>
     </v-data-table>
       <div class="text-xs-center pt-2">
@@ -59,7 +91,9 @@
     data: () => ({
       editedId: '',
       curentMonth: new Date().getMonth() + 1,
-      sorting: ''
+      sorting: '',
+      dialog: false,
+      itemToDelete:{},
     }),
     computed: {
       headers() {
@@ -77,7 +111,7 @@
           totalSumm += parseInt(this.expences[i].summ);
         }
         return totalSumm
-      }
+      },
     },
 
     created () {
@@ -94,9 +128,16 @@
         this.$store.commit('changeEditDialogModalState', true);
         this.$store.commit('createEditableItem', item);
       },
-      deleteItem (item) {
-        confirm('Are you sure you want to delete this item?') 
-        && this.$store.dispatch("deleteExpence", item);
+
+
+      showDeleteDialog (item) {
+        this.dialog = true;
+        this.itemToDelete = item;
+      },
+
+      deleteItem(item) {
+        this.dialog = false;
+        this.$store.dispatch("deleteExpence", item);
       },
       getCurrenthMonthExpences(){
         this.$store.commit('getCurrenthMonthExpences')

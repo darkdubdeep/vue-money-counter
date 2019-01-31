@@ -8,6 +8,7 @@ const developUrl = 'http://192.168.99.100/api';
 
 axios.defaults.baseURL = developUrl;
 
+
 export const store = new Vuex.Store({
   state: {
     userToken: localStorage.getItem('access_token') || null,
@@ -40,7 +41,8 @@ export const store = new Vuex.Store({
       editableItem: {},
       registered: false,
       logged: false,
-      totalSumm:0
+      totalSumm:0,
+      loading: false
   },
   mutations: {
     setUser(state, payload) {
@@ -66,8 +68,8 @@ export const store = new Vuex.Store({
     },
     saveChangesToEditedExpence(state, payload) {
       let foundExpenceIndex = state.expences.findIndex(
-        item => item.id == payload.editedItem.id);
-      Object.assign(state.expences[foundExpenceIndex], payload.editedItem)
+        item => item.id == payload.id);
+      Object.assign(state.expences[foundExpenceIndex], payload)
     },
     deleteExpence(state, payload) {
       let foundExpenceIndex = state.expences.findIndex(
@@ -105,26 +107,37 @@ export const store = new Vuex.Store({
     resetExpencesDateFilter(state){
       state.filteredByDateExpences = state.expences;
     },
+    setLoading(state, payload){
+        state.loading = payload
+        console.log(state.loading);
+    }
   },
   actions: {
     register({commit}, payload){
 
+      commit('setLoading', true)
       axios.post('/register',
       { 
         name:'empthy name',
         email:payload.username,
         username: payload.username,
-        password: payload.password
+        password: payload.password, 
       }
       ).then(responce=>{
 
         commit('register', true)
-        
+        commit('setLoading', false)
+
       }).catch(error => {
+
+        commit('setLoading', false)
         console.log(error);
       })
     },
     login({commit, getters}, payload) {
+
+      commit('setLoading', true)
+      console.log(this.loading)
       axios.post('/login',
       { 
         username:payload.username,
@@ -136,16 +149,15 @@ export const store = new Vuex.Store({
 
         localStorage.setItem('access_token', token);
 
-        commit('login', token)
+        commit('login', token);
+        commit('setLoading', false)
         
       }).catch(error => {
+        commit('setLoading', false)
         console.log(error);
       })
     },
     logout({commit, getters}){
-
-      // axios.defaults.headers.common['Authorization'] = 'Bearer ' + state.userToken;
-
 
       if(getters.user){
 
@@ -168,29 +180,83 @@ export const store = new Vuex.Store({
     },
     getExpences({commit}) {
 
+      commit('setLoading', true)
+
       axios.get('/expences',
 
       { headers: {"Authorization" : `Bearer ${this.state.userToken}`} }
 
       ).then(responce=>{
 
-        console.log(responce.data);
 
         commit('getExpences', responce.data)
+        commit('setLoading', false)
 
       }).catch(error => {
-
+        commit('setLoading', false)
         console.log(error);
       })
     },
     createExpence({commit, getters}, payload) {
-      commit("createExpence", payload)
+      commit('setLoading', true)
+      axios.post('/expences',
+      {
+        title: payload.title,
+        body: payload.title,
+        summ: payload.summ,
+        date: payload.date, 
+        comment: payload.comment, 
+      },
+      { headers: {"Authorization" : `Bearer ${this.state.userToken}`} }
+
+      ).then(responce=>{
+
+        commit("createExpence", responce.data)
+        commit('setLoading', false)
+
+      }).catch(error => {
+        commit('setLoading', false)
+        console.log(error);
+      })
     },
     saveChangesToEditedExpence({commit, getters}, payload) {
-      commit("saveChangesToEditedExpence", payload);
+
+      commit('setLoading', true)
+
+      axios.put("/expences" + "/" + payload.editedId,
+      {
+        title: payload.editedItem.title,
+        body: payload.editedItem.title,
+        summ: payload.editedItem.summ,
+        date: payload.editedItem.date, 
+        comment: payload.editedItem.comment, 
+      },
+      { headers: {"Authorization" : `Bearer ${this.state.userToken}`} }
+
+      ).then(responce=>{
+
+        commit("saveChangesToEditedExpence", responce.data);
+        commit('setLoading', false)
+
+      }).catch(error => {
+        commit('setLoading', false)
+        console.log(error);
+      })
+
     },
     deleteExpence({commit, getters},payload) {
-      commit("deleteExpence", payload);
+      commit('setLoading', true)
+      axios.delete("/expences" + "/" + payload.id,
+      { headers: {"Authorization" : `Bearer ${this.state.userToken}`} }
+
+      ).then(responce=>{
+        commit('setLoading', false)
+        commit("deleteExpence", payload);
+
+      }).catch(error => {
+        commit('setLoading', false)
+        console.log(error);
+      })
     }
   },
   getters:{
@@ -202,6 +268,10 @@ export const store = new Vuex.Store({
     },
     filteredByDateExpences: state => {
       return state.filteredByDateExpences
+    },
+    loading(state){
+      return state.loading
     }
+
   },
 })

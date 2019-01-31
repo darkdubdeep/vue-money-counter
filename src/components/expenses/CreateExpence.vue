@@ -9,10 +9,24 @@
             <v-container grid-list-md>
               <v-layout wrap>
                 <v-flex xs12 sm6 md4>
-                  <v-text-field v-model="newExpence.expence_name" label="Expence name"></v-text-field>
+                  <v-text-field 
+                      :error-messages="titleErrors"
+                      v-model="newExpence.title" 
+                      label="Expence name"
+                      @input="$v.newExpence.title.$touch()"
+                      @blur="$v.newExpence.title.$touch()"
+                      >
+                  </v-text-field>
                 </v-flex>
                 <v-flex xs12 sm6 md4>
-                  <v-text-field v-model="newExpence.summ" label="Summ"></v-text-field>
+                  <v-text-field 
+                      v-model="newExpence.summ" 
+                      label="Summ" 
+                      :error-messages="summErrors"
+                      @input="$v.newExpence.summ.$touch()"
+                      @blur="$v.newExpence.summ.$touch()"
+                  >
+                  </v-text-field>
                 </v-flex>
                 <v-flex xs12 sm6 md4>
                   <v-menu
@@ -22,9 +36,14 @@
                       >
                         <v-text-field
                           slot="activator"
+                          :error-messages="dateErrors"
                           clearable
                           readonly
-                          v-model="newExpence.date" label="Date"
+                          v-model="newExpence.date" 
+                          label="Date"
+                          @input="$v.newExpence.date.$touch()"
+                          @blur="$v.newExpence.date.$touch()"
+
                         ></v-text-field>
                         <v-date-picker
                           v-model="newExpence.date"
@@ -33,7 +52,10 @@
                     </v-menu>
                 </v-flex>
                 <v-flex xs12 sm6 md4>
-                  <v-text-field v-model="newExpence.comment" label="Comment"></v-text-field>
+                  <v-text-field 
+                      v-model="newExpence.comment" 
+                      label="Comment">
+                  </v-text-field>
                 </v-flex>
               </v-layout>
             </v-container>
@@ -48,29 +70,76 @@
 </template>
 
 <script>
+
+import { validationMixin } from 'vuelidate'
+import { required, minLength, numeric } from 'vuelidate/lib/validators'
+
 export default {
+    mixins: [validationMixin],
+
+    validations: {
+      newExpence: {
+        title: { required },
+        summ:  { required, numeric },
+        date:  { required },
+        testParams: { required }
+      }
+    },
+
     data: () => ({
       datePicker: false,
       dialog: false,
       newExpence: {
-        expence_name: '',
-        id: new Date().valueOf(), 
+        title: '',
+        id: '', 
         summ: null,
         date: '',
         comment: '',
       },
       defaultExpence: {
-        expence_name: '',
+        title: '',
         summ: null,
         date: '',
         comment: '',
       }
     }),
+    computed:{
+      titleErrors () {
+        console.log(this.$v);
+        const errors = []
+        if (!this.$v.newExpence.title.$dirty) return errors
+        !this.$v.newExpence.title.required && errors.push('Title is required')
+        return errors
+      },
+      summErrors () {
+        console.log(this.$v);
+        const errors = []
+        if (!this.$v.newExpence.summ.$dirty) return errors
+        !this.$v.newExpence.summ.numeric && errors.push('Must be a number')
+        !this.$v.newExpence.summ.required && errors.push('Summ is required')
+        return errors
+      },
+      dateErrors () {
+        console.log(this.$v);
+        const errors = []
+        if (!this.$v.newExpence.date.$dirty) return errors
+        !this.$v.newExpence.date.required && errors.push('Date is required')
+        return errors
+      },
+    },
     methods: {
+      setTitle(value) {
+      this.newExpence.title = value
+      this.$v.name.$touch()
+    },
       save () {
-        this.$store.dispatch("createExpence", this.newExpence);
-        this.newExpence = Object.assign({}, this.defaultExpence)
-        this.close()
+        this.$v.$touch()
+        if (!this.titleErrors.length && !this.summErrors.length && !this.dateErrors.length) {
+              this.$store.dispatch("createExpence", this.newExpence);
+              this.newExpence = Object.assign({}, this.defaultExpence);
+              this.$v.$reset(); 
+              this.close()
+        }
       },
       close () {
         this.dialog = false

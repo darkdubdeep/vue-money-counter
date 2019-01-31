@@ -1,41 +1,46 @@
 <template>
-<v-container > 
-  <v-layout justify-center>
-    <v-flex xs12 md6 >
-      <h1 class="text-xs-center login-header text-uppercase">Register</h1>
-      <form class="login-form">
-        <v-text-field
-          v-model="email"
-          :error-messages="emailErrors"
-          label="E-mail"
-          required
-          @input="$v.email.$touch()"
-          @blur="$v.email.$touch()"
-        ></v-text-field>
-        <v-text-field
-          v-model="password"
-          :error-messages="passwordErrors"
-          label="Password"
-          required
-          @input="$v.password.$touch()"
-          @blur="$v.password.$touch()"
-        ></v-text-field>
-         <v-text-field
-          v-model="repeatPassword"
-          :error-messages="repeatPasswordErrors"
-          label="Repeat password"
-          required
-          @input="$v.repeatPassword.$touch()"
-          @blur="$v.repeatPassword.$touch()"
-        ></v-text-field>
-        <div class="text-xs-right">
-          <v-btn @click="clear">cancel</v-btn>
-          <v-btn @click="register" color ="info" >Register</v-btn>
-        </div>
-      </form>
-      <p>If you allready have an account, please<router-link to='/'> Login</router-link> </p>
-    </v-flex>
-  </v-layout>
+<v-container fluid>
+    <div  v-if="loading === true" > 
+      <preloader-component></preloader-component>
+    </div>
+    <v-container> 
+      <v-layout justify-center>
+        <v-flex xs12 md6 >
+          <h1 class="text-xs-center login-header text-uppercase">Register</h1>
+          <form class="login-form">
+            <v-text-field
+              v-model="email"
+              :error-messages="emailErrors"
+              label="E-mail"
+              required
+              @input="$v.email.$touch()"
+              @blur="$v.email.$touch()"
+            ></v-text-field>
+            <v-text-field
+              v-model="password"
+              :error-messages="passwordErrors"
+              label="Password"
+              required
+              @input="$v.password.$touch()"
+              @blur="$v.password.$touch()"
+            ></v-text-field>
+            <v-text-field
+              v-model="repeatPassword"
+              :error-messages="repeatPasswordErrors"
+              label="Repeat password"
+              required
+              @input="$v.repeatPassword.$touch()"
+              @blur="$v.repeatPassword.$touch()"
+            ></v-text-field>
+            <div class="text-xs-right">
+              <v-btn @click="clear">cancel</v-btn>
+              <v-btn @click="register" color ="info" >Register</v-btn>
+            </div>
+          </form>
+          <p>If you allready have an account, please<router-link to='/'> Login</router-link> </p>
+        </v-flex>
+      </v-layout>
+    </v-container> 
 </v-container>
 </template>
 
@@ -86,12 +91,19 @@
       },
       userRegistration() {
         return this.$store.getters.userRegistration;
+      },
+      loading(){
+        return this.$store.getters.loading;
       }
     },
     watch: {
+      
     userRegistration(value) {
+
       if (value === true ) {
+
         this.$router.push("/");
+
         }
       }
     },

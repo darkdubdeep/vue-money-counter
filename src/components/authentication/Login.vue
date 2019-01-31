@@ -1,33 +1,38 @@
 <template>
-<v-container > 
-  <v-layout justify-center>
-    <v-flex xs12 md6 >
-      <h1 class="text-xs-center login-header text-uppercase">Login</h1>
-      <form class="login-form">
-        <v-text-field
-          v-model="email"
-          :error-messages="emailErrors"
-          label="E-mail"
-          required
-          @input="$v.email.$touch()"
-          @blur="$v.email.$touch()"
-        ></v-text-field>
-        <v-text-field
-          v-model="password"
-          :error-messages="passwordErrors"
-          label="Password"
-          required
-          @input="$v.password.$touch()"
-          @blur="$v.password.$touch()"
-        ></v-text-field>
-        <div class="text-xs-right">
-          <v-btn @click="clear">cancel</v-btn>
-          <v-btn @click="logIn" color ="info" >submit</v-btn>
-        </div>
-      </form>
-      <p>You dont`t have account? <router-link to='/registration'> You can create one!</router-link> </p>
-    </v-flex>
-  </v-layout>
+<v-container fluid> 
+    <div  v-if="loading === true" > 
+      <preloader-component></preloader-component>
+    </div>
+    <v-container> 
+      <v-layout justify-center>
+        <v-flex xs12 md6 >
+          <h1 class="text-xs-center login-header text-uppercase">Login</h1>
+          <form class="login-form">
+            <v-text-field
+              v-model="email"
+              :error-messages="emailErrors"
+              label="E-mail"
+              required
+              @input="$v.email.$touch()"
+              @blur="$v.email.$touch()"
+            ></v-text-field>
+            <v-text-field
+              v-model="password"
+              :error-messages="passwordErrors"
+              label="Password"
+              required
+              @input="$v.password.$touch()"
+              @blur="$v.password.$touch()"
+            ></v-text-field>
+            <div class="text-xs-right">
+              <v-btn @click="clear">cancel</v-btn>
+              <v-btn @click="logIn" color ="info" >submit</v-btn>
+            </div>
+          </form>
+          <p>You dont`t have account? <router-link to='/registration'> You can create one!</router-link> </p>
+        </v-flex>
+      </v-layout>
+    </v-container>
 </v-container>
 </template>
 
@@ -66,6 +71,9 @@
       user() {
         return this.$store.getters.user;
       },
+      loading(){
+        return this.$store.getters.loading;
+      }
     },
     watch: {
     user(value) {
@@ -82,7 +90,6 @@
               username:this.email,
               password:this.password
             }
-            console.log(dataForLogin)
             this.$store.dispatch('login', dataForLogin);
         }
         
