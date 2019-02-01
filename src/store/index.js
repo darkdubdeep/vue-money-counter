@@ -42,6 +42,7 @@ export const store = new Vuex.Store({
       registered: false,
       logged: false,
       totalSumm:0,
+      requestError:null,
       loading: false
   },
   mutations: {
@@ -64,7 +65,7 @@ export const store = new Vuex.Store({
       state.editDialogWindowIsOpened = payload
     },
     createEditableItem(state, payload){
-        state.editableItem = Object.assign({}, payload);
+      state.editableItem = Object.assign({}, payload);
     },
     saveChangesToEditedExpence(state, payload) {
       let foundExpenceIndex = state.expences.findIndex(
@@ -83,19 +84,31 @@ export const store = new Vuex.Store({
       let currentYear = new Date().toISOString().substr(0, 4);
       let date = new Date();
       let currentMonthDate = 
-        new Date(date.getFullYear(), date.getMonth(), 1)
+        new Date(date.getFullYear(), date.getMonth(), 2)
         .toISOString().substr(0, 10);
         state.filteredByDateExpences = state.expences.filter (
-         expence => expence.date.substr(0, 4) === currentYear && expence.date > currentMonthDate
+         expence => {
+           return expence.date.substr(0, 4) === 
+           currentYear && expence.date.substr(5, 2) === currentMonthDate.substr(5, 2)
+          }
         )
     },
     getLastTreMonthsExpences(state){
       let date = new Date();
       let lastTreeMonthDate = 
-      new Date(date.getFullYear(), date.getMonth()-2, date.getDate())
+      new Date(date.getFullYear(), date.getMonth() -2, date.getDate())
       .toISOString().substr(0, 10);
+
+      let futureTreeMonths = 
+      new Date(date.getFullYear(), date.getMonth() +2, date.getDate())
+      .toISOString().substr(0, 10);
+
       state.filteredByDateExpences = state.expences.filter (
-       expence => expence.date > lastTreeMonthDate
+       expence => {
+         console.log(expence.date.substr(5, 2))
+         console.log(futureTreeMonths.substr(5, 2))
+         expence.date.substr(5, 2) > lastTreeMonthDate.substr(5, 2) && expence.date.substr(5, 2) > futureTreeMonths.substr(5, 2)
+        }
       )
     },
     getCurrentYearExpences(state){
@@ -109,7 +122,12 @@ export const store = new Vuex.Store({
     },
     setLoading(state, payload){
         state.loading = payload
-        console.log(state.loading);
+    },
+    setRequestError(state, payload) {
+      state.requestError = payload
+    },
+    clearError(state){
+      state.requestError = null;
     }
   },
   actions: {
@@ -129,15 +147,17 @@ export const store = new Vuex.Store({
         commit('setLoading', false)
 
       }).catch(error => {
-
+        if(error.response) {
+          commit('setRequestError', 'user allready exist')
+        } else {
+          commit('setRequestError', 'connection error')
+        }
         commit('setLoading', false)
-        console.log(error);
       })
     },
     login({commit, getters}, payload) {
 
       commit('setLoading', true)
-      console.log(this.loading)
       axios.post('/login',
       { 
         username:payload.username,
@@ -152,26 +172,30 @@ export const store = new Vuex.Store({
         commit('login', token);
         commit('setLoading', false)
         
-      }).catch(error => {
+      }).catch((error) => {
+        if(error.response) {
+          commit('setRequestError', error.response.data)
+        } else {
+          commit('setRequestError', 'connection error')
+        }
         commit('setLoading', false)
-        console.log(error);
       })
     },
     logout({commit, getters}){
 
+      axios.defaults.headers.common['Authorization'] ='Bearer ' + this.state.userToken;
+
       if(getters.user){
 
-        axios.post('/logout', 
-
-        { headers: {"Authorization" : `Bearer ${this.state.userToken}`} }).then(responce=>{
+        axios.post('/logout')
+        .then(responce=>{
 
           localStorage.removeItem('access_token');
 
           commit('logout');
 
         }).catch(error => {
-
-          console.log(error);
+          // console.log(error);
         })
       }
     },
@@ -194,6 +218,7 @@ export const store = new Vuex.Store({
 
       }).catch(error => {
         commit('setLoading', false)
+        commit('setRequestError', 'request error')
         console.log(error);
       })
     },
@@ -216,6 +241,7 @@ export const store = new Vuex.Store({
 
       }).catch(error => {
         commit('setLoading', false)
+        commit('setRequestError', 'request error')
         console.log(error);
       })
     },
@@ -240,6 +266,7 @@ export const store = new Vuex.Store({
 
       }).catch(error => {
         commit('setLoading', false)
+        commit('setRequestError', 'request error')
         console.log(error);
       })
 
@@ -255,8 +282,12 @@ export const store = new Vuex.Store({
 
       }).catch(error => {
         commit('setLoading', false)
+        commit('setRequestError', 'request error')
         console.log(error);
       })
+    },
+    clearError({commit, getters}, payload) {
+        commit('clearError')
     }
   },
   getters:{
@@ -271,7 +302,44 @@ export const store = new Vuex.Store({
     },
     loading(state){
       return state.loading
-    }
+    },
+    requestError(state){
+      return state.requestError
+    },
+    sparklineValues(state) {
+      let sparklineValues = [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ];
 
+      let currentYear = new Date().toISOString().substr(0, 4);
+      let currentYearExpences = state.expences.filter (
+        expence => expence.date.substr(0, 4) === currentYear
+      )
+
+      for (let expence of currentYearExpences) {
+        let expenceMonth = Number(expence.date.substr(5, 2));
+        let index = 0;
+        for (let value of sparklineValues) {
+            index ++;
+            if (index === expenceMonth) {
+              sparklineValues[index -1] += Number(expence.summ);
+            }
+        }
+
+
+      }
+      return sparklineValues
+    }
   },
 })

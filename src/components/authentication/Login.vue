@@ -3,6 +3,11 @@
     <div  v-if="loading === true" > 
       <preloader-component></preloader-component>
     </div>
+
+    <div v-if="requestError">
+      <error-alert @dismissed="onDismissed" :text='requestError'></error-alert>
+    </div>
+
     <v-container> 
       <v-layout justify-center>
         <v-flex xs12 md6 >
@@ -18,14 +23,18 @@
             ></v-text-field>
             <v-text-field
               v-model="password"
+              :append-icon="show ? 'visibility_off' : 'visibility'"
               :error-messages="passwordErrors"
+              :type="show ? 'text' : 'password'"
               label="Password"
               required
               @input="$v.password.$touch()"
               @blur="$v.password.$touch()"
+              @click:append="show = !show"
+
             ></v-text-field>
             <div class="text-xs-right">
-              <v-btn @click="clear">cancel</v-btn>
+              <v-btn @click="clear">clear</v-btn>
               <v-btn @click="logIn" color ="info" >submit</v-btn>
             </div>
           </form>
@@ -52,9 +61,13 @@
     data: () => ({
       email: '',
       password: '',
+      show: false,
     }),
 
     computed: {
+      requestError(){
+          return this.$store.getters.requestError
+      },
       emailErrors () {
         const errors = []
         if (!this.$v.email.$dirty) return errors
@@ -73,7 +86,7 @@
       },
       loading(){
         return this.$store.getters.loading;
-      }
+      },
     },
     watch: {
     user(value) {
@@ -98,7 +111,10 @@
         this.$v.$reset()
         this.password = ''
         this.email = ''
-      }
+      },
+      onDismissed() {
+        this.$store.dispatch("clearError");
+      },
     }
   }
 </script>

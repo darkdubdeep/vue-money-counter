@@ -1,6 +1,9 @@
 <template>
   <div>
-    <v-toolbar flat color="white" class="mt-5">
+    <div v-if="requestError">
+        <error-alert @dismissed="onDismissed" :text='requestError'></error-alert>
+    </div>
+    <v-toolbar flat color="white" >
       <v-toolbar-title>My expences</v-toolbar-title>
       <v-divider
         class="mx-2"
@@ -76,13 +79,38 @@
         no expences 
       </template>
     </v-data-table>
-      <div class="text-xs-center pt-2">
-        <h3 class="mt-4 mb-4 text-uppercase" absolute>Total: {{totalSumm}} $</h3>
-        <v-btn color="primary" @click="resetExpencesDateFilter">All</v-btn>
-        <v-btn color="primary" @click="getCurrenthMonthExpences">Currenth month</v-btn>
-        <v-btn color="primary" @click="getLastTreMonthsExpences">Current three months</v-btn>
-        <v-btn color="primary" @click="getCurrentYearExpences">Current year</v-btn>
-      </div>
+
+        <v-layout justify-center>
+            <v-flex xs12 md8 >
+              <div class="pt-2">
+                <v-btn color="primary" @click="resetExpencesDateFilter" small >All</v-btn>
+                <v-btn color="primary" @click="getCurrenthMonthExpences" small >Currenth month</v-btn>
+                <v-btn color="primary" small @click="getLastTreMonthsExpences">Current three months</v-btn>
+                <v-btn color="primary" small @click="getCurrentYearExpences">Current year</v-btn>
+              </div>
+            </v-flex>
+            <v-flex xs12 md4 >
+              <h4 class="mt-4 mb-4 text-uppercase text-lg-right" >Total: {{totalSumm}} $</h4>
+            </v-flex>
+        </v-layout>
+        <v-layout>
+          <v-flex lg12 >
+              <v-sheet
+                class="v-sheet--offset mx-auto"
+                color="white"
+                elevation="12"
+                max-width="calc(50% - 32px)"
+              >
+                <v-sparkline
+                  :labels="sparklineLabels"
+                  :value="sparklineValues"
+                  color="primary"
+                  line-width="1"
+                  padding="16"
+                ></v-sparkline>
+              </v-sheet>
+            </v-flex>
+        </v-layout>
   </div>
 </template>
 
@@ -94,13 +122,26 @@
       sorting: '',
       dialog: false,
       itemToDelete:{},
+      sparklineLabels: [
+        'Jan',
+        'Feb',
+        'Mar',
+        'Apr',
+        'May',
+        'Jun',
+        'Jul',
+        'Aug',
+        'Sep',
+        'Oct',
+        'Nov',
+        'Dec'
+      ]
     }),
     computed: {
       headers() {
         return this.$store.state.headers;
       },
       expences() {
-        console.log(this.$store.state.expences);
         return this.$store.getters.filteredByDateExpences.length 
         ? this.$store.getters.filteredByDateExpences 
         : this.$store.state.expences;
@@ -112,6 +153,12 @@
         }
         return totalSumm
       },
+      requestError(){
+        return this.$store.getters.requestError
+      },
+      sparklineValues(){
+        return this.$store.getters.sparklineValues
+      }
     },
 
     created () {
@@ -128,8 +175,6 @@
         this.$store.commit('changeEditDialogModalState', true);
         this.$store.commit('createEditableItem', item);
       },
-
-
       showDeleteDialog (item) {
         this.dialog = true;
         this.itemToDelete = item;
@@ -150,6 +195,9 @@
       },
       resetExpencesDateFilter(){
         this.$store.commit('resetExpencesDateFilter')
+      },
+      onDismissed() {
+        this.$store.dispatch("clearError");
       },
     }
   }

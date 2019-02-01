@@ -105,14 +105,12 @@ export default {
     }),
     computed:{
       titleErrors () {
-        console.log(this.$v);
         const errors = []
         if (!this.$v.newExpence.title.$dirty) return errors
         !this.$v.newExpence.title.required && errors.push('Title is required')
         return errors
       },
       summErrors () {
-        console.log(this.$v);
         const errors = []
         if (!this.$v.newExpence.summ.$dirty) return errors
         !this.$v.newExpence.summ.numeric && errors.push('Must be a number')
@@ -120,7 +118,6 @@ export default {
         return errors
       },
       dateErrors () {
-        console.log(this.$v);
         const errors = []
         if (!this.$v.newExpence.date.$dirty) return errors
         !this.$v.newExpence.date.required && errors.push('Date is required')

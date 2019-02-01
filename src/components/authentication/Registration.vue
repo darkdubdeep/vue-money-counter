@@ -3,6 +3,11 @@
     <div  v-if="loading === true" > 
       <preloader-component></preloader-component>
     </div>
+
+    <div v-if="requestError">
+      <error-alert @dismissed="onDismissed" :text='requestError'></error-alert>
+    </div>
+    
     <v-container> 
       <v-layout justify-center>
         <v-flex xs12 md6 >
@@ -23,6 +28,10 @@
               required
               @input="$v.password.$touch()"
               @blur="$v.password.$touch()"
+              :type="show1 ? 'text' : 'password'"
+              @click:append="show1 = !show1"
+              :append-icon="show1 ? 'visibility_off' : 'visibility'"
+
             ></v-text-field>
             <v-text-field
               v-model="repeatPassword"
@@ -31,6 +40,9 @@
               required
               @input="$v.repeatPassword.$touch()"
               @blur="$v.repeatPassword.$touch()"
+              :type="show2 ? 'text' : 'password'"
+              @click:append="show2 = !show2"
+              :append-icon="show2 ? 'visibility_off' : 'visibility'"
             ></v-text-field>
             <div class="text-xs-right">
               <v-btn @click="clear">cancel</v-btn>
@@ -64,11 +76,16 @@
       email: '',
       password:'',
       repeatPassword: '',
+      show1: false,
+      show2: false,
     }),
 
      computed: {
       registered(){
           this.$store.state.registered
+      },
+      requestError(){
+          return this.$store.getters.requestError
       },
       emailErrors () {
         const errors = []
@@ -97,15 +114,11 @@
       }
     },
     watch: {
-      
-    userRegistration(value) {
-
-      if (value === true ) {
-
-        this.$router.push("/");
-
+      userRegistration(value) {
+        if (value === true ) {
+          this.$router.push("/");
+          }
         }
-      }
     },
     methods: {
       register() {
@@ -113,22 +126,22 @@
         if (!this.emailErrors.length && 
         !this.passwordErrors.length && 
         !this.repeatPasswordErrors.length) {
-
             const dataForLogin = {
               username:this.email,
               password:this.password
             }
-
             console.log(dataForLogin);
-
             this.$store.dispatch('register', dataForLogin)
         }
       },
-      clear () {
+      clear() {
         this.$v.$reset()
         this.password = ''
         this.email = ''
-      }
+      },
+      onDismissed() {
+        this.$store.dispatch("clearError");
+      },
     }
   }
 </script>
