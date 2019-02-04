@@ -82,11 +82,22 @@
 
         <v-layout justify-center>
             <v-flex xs12 md8 >
-              <div class="pt-2">
-                <v-btn color="primary" @click="resetExpencesDateFilter" small >All</v-btn>
-                <v-btn color="primary" @click="getCurrenthMonthExpences" small >Currenth month</v-btn>
-                <v-btn color="primary" small @click="getLastTreMonthsExpences">Current three months</v-btn>
-                <v-btn color="primary" small @click="getCurrentYearExpences">Current year</v-btn>
+              <div class="pt-2" ref="button-holder">
+                <v-btn color="primary" id="show_all_button" @click="resetExpencesDateFilter(); activatedButton = 1;" small
+                 :class="{'v-btn--active': activatedButton === 1 }" 
+                >All</v-btn>
+                <v-btn color="primary" id="show_month_button" 
+                @click="getCurrenthMonthExpences(); activatedButton = 2;" small
+                :class="{'v-btn--active': activatedButton === 2 }"
+                >Currenth month</v-btn>
+                <v-btn color="primary" id="show_tree_month_button" small 
+                @click="getLastTreMonthsExpences(); activatedButton = 3;"
+                :class="{'v-btn--active': activatedButton === 3 }"
+                >Current three months</v-btn>
+                <v-btn color="primary" id="show_four_month_button" small 
+                @click="getCurrentYearExpences();  activatedButton = 4;"
+                :class="{'v-btn--active': activatedButton === 4 }"
+                >Current year</v-btn>
               </div>
             </v-flex>
             <v-flex xs12 md4 >
@@ -135,14 +146,15 @@
         'Oct',
         'Nov',
         'Dec'
-      ]
+      ],
+      activatedButton:1,
     }),
     computed: {
       headers() {
         return this.$store.state.headers;
       },
       expences() {
-        return this.$store.getters.filteredByDateExpences.length 
+        return this.$store.getters.filteredByDateExpences !== null 
         ? this.$store.getters.filteredByDateExpences 
         : this.$store.state.expences;
       },
@@ -169,6 +181,10 @@
 
     methods: {
       initialize () {
+      },
+      activateButton(e) {
+        this.buttonText = e.target.innerText;
+        console.log(e.target.innerText);
       },
       editItem (item) {
         this.editedId = item.id;
@@ -199,6 +215,9 @@
       onDismissed() {
         this.$store.dispatch("clearError");
       },
+    },
+    mounted(){
+      console.log(this.$refs)
     }
   }
 </script>

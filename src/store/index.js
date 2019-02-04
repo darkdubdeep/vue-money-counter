@@ -36,7 +36,7 @@ export const store = new Vuex.Store({
         }
       ],
       expences:[],
-      filteredByDateExpences:[],
+      filteredByDateExpences:null,
       editDialogWindowIsOpened: false,
       editableItem: {},
       registered: false,
@@ -71,11 +71,13 @@ export const store = new Vuex.Store({
       let foundExpenceIndex = state.expences.findIndex(
         item => item.id == payload.id);
       Object.assign(state.expences[foundExpenceIndex], payload)
+      state.filteredByDateExpences !== null ? Object.assign(state.expences[foundExpenceIndex], payload) : true
     },
     deleteExpence(state, payload) {
       let foundExpenceIndex = state.expences.findIndex(
         item => item.id == payload.id);
       state.expences.splice(foundExpenceIndex, 1)
+      state.filteredByDateExpences !== null ? state.filteredByDateExpences.splice(foundExpenceIndex, 1) : true
     },
     getExpences(state, payload) {
       state.expences = payload;
@@ -105,9 +107,7 @@ export const store = new Vuex.Store({
 
       state.filteredByDateExpences = state.expences.filter (
        expence => {
-         console.log(expence.date.substr(5, 2))
-         console.log(futureTreeMonths.substr(5, 2))
-         expence.date.substr(5, 2) > lastTreeMonthDate.substr(5, 2) && expence.date.substr(5, 2) > futureTreeMonths.substr(5, 2)
+         return expence.date > lastTreeMonthDate && expence.date < futureTreeMonths
         }
       )
     },
@@ -118,7 +118,7 @@ export const store = new Vuex.Store({
       )
     },
     resetExpencesDateFilter(state){
-      state.filteredByDateExpences = state.expences;
+      state.filteredByDateExpences = null;
     },
     setLoading(state, payload){
         state.loading = payload
@@ -307,20 +307,8 @@ export const store = new Vuex.Store({
       return state.requestError
     },
     sparklineValues(state) {
-      let sparklineValues = [
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0
-      ];
+
+      let sparklineValues = Array(12).fill(0);
 
       let currentYear = new Date().toISOString().substr(0, 4);
       let currentYearExpences = state.expences.filter (
@@ -329,14 +317,12 @@ export const store = new Vuex.Store({
 
       for (let expence of currentYearExpences) {
         let expenceMonth = Number(expence.date.substr(5, 2));
-        let index = 0;
-        for (let value of sparklineValues) {
-            index ++;
+        let indexes = sparklineValues.keys();
+        for (let index of indexes) {
             if (index === expenceMonth) {
               sparklineValues[index -1] += Number(expence.summ);
             }
         }
-
 
       }
       return sparklineValues
