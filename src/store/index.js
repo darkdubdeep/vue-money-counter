@@ -43,7 +43,22 @@ export const store = new Vuex.Store({
       logged: false,
       totalSumm:0,
       requestError:null,
-      loading: false
+      loading: false,
+      sparklineLabels: [
+        'Jan',
+        'Feb',
+        'Mar',
+        'Apr',
+        'May',
+        'Jun',
+        'Jul',
+        'Aug',
+        'Sep',
+        'Oct',
+        'Nov',
+        'Dec'
+      ],
+      sparklineValues: Array(12).fill(0)
   },
   mutations: {
     setUser(state, payload) {
@@ -59,7 +74,10 @@ export const store = new Vuex.Store({
       state.userToken = null;
     },
     createExpence(state, payload) {
+
       state.expences.push(payload);
+      state.filteredByDateExpences !== null ? state.filteredByDateExpences.push(payload) : true
+
     },
     changeEditDialogModalState(state, payload) {
       state.editDialogWindowIsOpened = payload
@@ -74,10 +92,17 @@ export const store = new Vuex.Store({
       state.filteredByDateExpences !== null ? Object.assign(state.expences[foundExpenceIndex], payload) : true
     },
     deleteExpence(state, payload) {
+
       let foundExpenceIndex = state.expences.findIndex(
         item => item.id == payload.id);
       state.expences.splice(foundExpenceIndex, 1)
-      state.filteredByDateExpences !== null ? state.filteredByDateExpences.splice(foundExpenceIndex, 1) : true
+
+      if(state.filteredByDateExpences !== null) {
+        let foundExpenceIndex = state.filteredByDateExpences.findIndex(
+          item => item.id == payload.id);
+        state.filteredByDateExpences.splice(foundExpenceIndex, 1)
+      }
+
     },
     getExpences(state, payload) {
       state.expences = payload;
@@ -105,6 +130,7 @@ export const store = new Vuex.Store({
       new Date(date.getFullYear(), date.getMonth() +2, date.getDate())
       .toISOString().substr(0, 10);
 
+
       state.filteredByDateExpences = state.expences.filter (
        expence => {
          return expence.date > lastTreeMonthDate && expence.date < futureTreeMonths
@@ -128,7 +154,7 @@ export const store = new Vuex.Store({
     },
     clearError(state){
       state.requestError = null;
-    }
+    },
   },
   actions: {
     register({commit}, payload){
@@ -222,7 +248,7 @@ export const store = new Vuex.Store({
         console.log(error);
       })
     },
-    createExpence({commit, getters}, payload) {
+    createExpence({commit, getters, dispatch}, payload) {
       commit('setLoading', true)
       axios.post('/expences',
       {
@@ -245,9 +271,10 @@ export const store = new Vuex.Store({
         console.log(error);
       })
     },
-    saveChangesToEditedExpence({commit, getters}, payload) {
+    saveChangesToEditedExpence({commit, getters, dispatch }, payload) {
 
       commit('setLoading', true)
+      console.log()
 
       axios.put("/expences" + "/" + payload.editedId,
       {
@@ -260,10 +287,10 @@ export const store = new Vuex.Store({
       { headers: {"Authorization" : `Bearer ${this.state.userToken}`} }
 
       ).then(responce=>{
-
+      
         commit("saveChangesToEditedExpence", responce.data);
         commit('setLoading', false)
-
+        
       }).catch(error => {
         commit('setLoading', false)
         commit('setRequestError', 'request error')
@@ -308,16 +335,17 @@ export const store = new Vuex.Store({
     },
     sparklineValues(state) {
 
-      let sparklineValues = Array(12).fill(0);
+      let sparklineValues = Array(12).fill(0)
 
       let currentYear = new Date().toISOString().substr(0, 4);
       let currentYearExpences = state.expences.filter (
         expence => expence.date.substr(0, 4) === currentYear
       )
-
+      
       for (let expence of currentYearExpences) {
         let expenceMonth = Number(expence.date.substr(5, 2));
         let indexes = sparklineValues.keys();
+
         for (let index of indexes) {
             if (index === expenceMonth) {
               sparklineValues[index -1] += Number(expence.summ);
@@ -326,6 +354,82 @@ export const store = new Vuex.Store({
 
       }
       return sparklineValues
-    }
+    },
+    sparklineLabels(state) {
+      return state.sparklineLabels
+    },
+
+    testGetter: (state) => (monthsCount, monthNumber) => {
+
+      let sparklineObj = {
+        sparklineValues: 12,
+        sparklineLabels: []
+      }
+
+      const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+        "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"
+      ];
+
+      if (monthsCount === 1) {
+
+        let currentYear = new Date().toISOString().substr(0, 4);
+        let daysInMonth = (currentYear, monthNumber) => {
+          return new Date(currentYear, monthNumber, 0).getDate();
+        }
+        sparklineObj.sparklineValues = Array(daysInMonth(currentYear, monthNumber)).fill(0);
+
+      }
+      if (monthsCount === 3) {
+        sparklineObj.sparklineValues = Array(3).fill(0);
+      }
+      if (monthsCount === 12) {
+        sparklineObj.sparklineValues = Array(monthsCount).fill(0);
+      }
+
+      let currentYear = new Date().toISOString().substr(0, 4);
+
+      let currentYearExpences = state.expences.filter (
+        expence => expence.date.substr(0, 4) === currentYear
+      )
+
+      let date = new Date();
+      let currentMonthDate = Number(new Date(date.getFullYear(), date.getMonth(), 2).toISOString().substr(5, 2));
+
+      const indexes = Object.keys(sparklineObj.sparklineValues);
+
+    
+      if(monthsCount == 1) {
+        for (let index of indexes) {
+          sparklineObj.sparklineLabels.push(Number(index) + 1);
+        }
+      }
+
+      if(monthsCount == 3) {
+        for (let index of indexes) {
+          sparklineObj.sparklineLabels.push(monthNames[Number(index)]);
+        }
+      }
+
+      if(monthsCount == 12) {
+        sparklineObj.sparklineLabels = monthNames;
+      }
+
+      for (let expence of currentYearExpences) {
+        let expenceMonth = Number(expence.date.substr(5, 2));
+        let expenceDay = Number(expence.date.substr(8, 2));
+        for (let index of indexes) {
+          if(monthsCount == 1) {
+            if (currentMonthDate == expenceMonth && expenceDay == index) {
+              sparklineObj.sparklineValues[index - 1] += Number(expence.summ);
+            }
+          } else {
+              if (index == expenceMonth) {
+                sparklineObj.sparklineValues[index - 1] += Number(expence.summ);
+              }
+          }
+        }
+      }
+      return sparklineObj
+    },
   },
 })

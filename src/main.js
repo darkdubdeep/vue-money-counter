@@ -15,7 +15,6 @@ Vue.component("edit-expence-dialog", EditeExpence);
 Vue.component("preloader-component", PreloaderComponent);
 Vue.component("error-alert", ErrorAlert);
 
-
 new Vue({
   router,
   store,

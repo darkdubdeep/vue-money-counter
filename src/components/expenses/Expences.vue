@@ -56,7 +56,7 @@
     >
       <template slot="items" slot-scope="props">
         <td class="text-xs-center">{{ props.item.title }}</td>
-        <td class="text-xs-center">{{ props.item.summ }} $</td>
+        <td class="text-xs-center">{{ props.item.summ | formtatNumbers}} $</td>
         <td class="text-xs-center">{{ props.item.date }}</td>
         <td class="text-xs-center">{{ props.item.comment }}</td>
         <td class="justify-center layout px-0">
@@ -101,23 +101,32 @@
               </div>
             </v-flex>
             <v-flex xs12 md4 >
-              <h4 class="mt-4 mb-4 text-uppercase text-lg-right" >Total: {{totalSumm}} $</h4>
+              <h4 class="mt-4 mb-4 text-uppercase text-lg-right" >Total: {{totalSumm | formtatNumbers}} $</h4>
             </v-flex>
         </v-layout>
         <v-layout>
-          <v-flex lg12 >
+          <v-flex lg6 >
               <v-sheet
-                class="v-sheet--offset mx-auto"
+                class="v-sheet--offset mx-auto expences-sparkline"
                 color="white"
                 elevation="12"
-                max-width="calc(50% - 32px)"
+                max-width="calc(100% - 32px)"
               >
-                <v-sparkline
-                  :labels="sparklineLabels"
-                  :value="sparklineValues"
+                <v-sparkline v-if="!expences.length"
+                    :labels="sparklineLabels"
+                    :value="sparklineValues"
+                    color="primary"
+                    line-width="1"
+                    padding="16"
+                ></v-sparkline>
+                <v-sparkline v-if="expences.length"
+                  :labels="testGetter.sparklineLabels"
+                  :value="testGetter.sparklineValues"
+                  :key="testGetter.sparklineValues"
                   color="primary"
                   line-width="1"
                   padding="16"
+                  auto-draw
                 ></v-sparkline>
               </v-sheet>
             </v-flex>
@@ -129,25 +138,13 @@
   export default {
     data: () => ({
       editedId: '',
-      curentMonth: new Date().getMonth() + 1,
+      monthsCount: 12,
+      curentMonthNumber: new Date().getMonth() + 1,
       sorting: '',
       dialog: false,
       itemToDelete:{},
-      sparklineLabels: [
-        'Jan',
-        'Feb',
-        'Mar',
-        'Apr',
-        'May',
-        'Jun',
-        'Jul',
-        'Aug',
-        'Sep',
-        'Oct',
-        'Nov',
-        'Dec'
-      ],
       activatedButton:1,
+      number:12,
     }),
     computed: {
       headers() {
@@ -168,17 +165,25 @@
       requestError(){
         return this.$store.getters.requestError
       },
+      sparklineLabels(){
+        return this.$store.getters.sparklineLabels
+      },
       sparklineValues(){
         return this.$store.getters.sparklineValues
+      },
+      testGetter(){
+        return this.$store.getters.testGetter(this.monthsCount, this.curentMonthNumber)
       }
     },
-
     created () {
       this.initialize();
       this.$store.dispatch("getExpences");
-
     },
-
+    filters: {
+      formtatNumbers: function(num) {
+          return Number(num).toLocaleString();
+      }
+    },
     methods: {
       initialize () {
       },
@@ -195,29 +200,51 @@
         this.dialog = true;
         this.itemToDelete = item;
       },
-
       deleteItem(item) {
         this.dialog = false;
         this.$store.dispatch("deleteExpence", item);
       },
       getCurrenthMonthExpences(){
-        this.$store.commit('getCurrenthMonthExpences')
+        let date = new Date();
+        let currentMonthDate = 
+        new Date(date.getFullYear(), date.getMonth(), 2)
+        .toISOString().substr(5, 2);
+        this.curentMonthNumber = currentMonthDate;
+        this.monthsCount = 1
+        this.$store.commit('getCurrenthMonthExpences');
       },
       getLastTreMonthsExpences(){
+        let date = new Date();
+        let currentMonthDate = 
+        new Date(date.getFullYear(), date.getMonth(), 2)
+        .toISOString().substr(5, 2);
+
+        this.curentMonthNumber = currentMonthDate;
+
+        this.monthsCount = 3
         this.$store.commit('getLastTreMonthsExpences')
       },
       getCurrentYearExpences(){
+        this.monthsCount = 12
         this.$store.commit('getCurrentYearExpences')
       },
       resetExpencesDateFilter(){
+        this.monthsCount = 12
         this.$store.commit('resetExpencesDateFilter')
       },
       onDismissed() {
         this.$store.dispatch("clearError");
       },
-    },
-    mounted(){
-      console.log(this.$refs)
     }
   }
 </script>
+
+<style>
+.expences-sparkline {
+  margin-left:3px!important;
+}
+
+/* .elevation-1 {
+  min-height: 310px;
+} */
+</style>
