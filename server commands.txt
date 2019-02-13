@@ -1,0 +1,12 @@
+﻿cd /var/www/money-counter-back/
+git pull
+
+
+
+http://212.109.193.230:8080/#/
+
+
+
+
+
+
