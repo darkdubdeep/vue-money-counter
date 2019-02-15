@@ -120,12 +120,12 @@ export default {
   }),
   computed: {
     headers() {
-      return this.$store.state.headers;
+      return this.$store.state.expences.headers;
     },
     expences() {
       return this.$store.getters.filteredByDateExpences !== null
         ? this.$store.getters.filteredByDateExpences
-        : this.$store.state.expences;
+        : this.$store.state.expences.expences;
     },
     totalSumm() {
       let totalSumm = 0;
@@ -161,6 +161,7 @@ export default {
     },
     editItem(item) {
       this.editedId = item.id;
+      console.log(item.id);
       this.$store.commit("changeEditDialogModalState", true);
       this.$store.commit("createEditableItem", item);
     },
