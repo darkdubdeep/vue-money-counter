@@ -26,7 +26,7 @@
     <v-data-table :headers="headers" :items="expences" class="elevation-1">
       <template slot="items" slot-scope="props">
         <td class="text-xs-center">{{ props.item.title }}</td>
-        <td class="text-xs-center">{{ props.item.summ | formtatNumbers}} $</td>
+        <td class="text-xs-center">{{ props.item.summ | formatNumbers}} $</td>
         <td class="text-xs-center">{{ props.item.date }}</td>
         <td class="text-xs-center">{{ props.item.comment }}</td>
         <td class="justify-center layout px-0">
@@ -71,7 +71,7 @@
         </div>
       </v-flex>
       <v-flex xs12 md4>
-        <h4 class="mt-4 mb-4 text-uppercase text-lg-right">Total: {{totalSumm | formtatNumbers}} $</h4>
+        <h4 class="mt-4 mb-4 text-uppercase text-lg-right">Total: {{totalSumm | formatNumbers}} $</h4>
       </v-flex>
     </v-layout>
     <v-layout>
@@ -149,7 +149,7 @@ export default {
     this.$store.dispatch("getExpences");
   },
   filters: {
-    formtatNumbers: function(num) {
+    formatNumbers: function(num) {
       return Number(num).toLocaleString();
     }
   },
@@ -161,7 +161,6 @@ export default {
     },
     editItem(item) {
       this.editedId = item.id;
-      console.log(item.id);
       this.$store.commit("changeEditDialogModalState", true);
       this.$store.commit("createEditableItem", item);
     },

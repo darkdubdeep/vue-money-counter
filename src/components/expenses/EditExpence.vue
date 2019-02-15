@@ -45,8 +45,8 @@
                 <v-date-picker v-model="editableItem.date" @change="datePicker = false"></v-date-picker>
               </v-menu>
             </v-flex>
-            <v-flex xs12 sm6 md4>
-              <v-text-field v-model="editableItem.comment" label="Comment"></v-text-field>
+            <v-flex xs12>
+              <v-textarea v-model="editableItem.comment" label="Comment"></v-textarea>
             </v-flex>
           </v-layout>
         </v-container>

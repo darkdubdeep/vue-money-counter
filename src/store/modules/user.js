@@ -68,10 +68,10 @@ export default {
           commit("setLoading", false);
         });
     },
-    logout({ commit, getters }) {
+    logout({ state, commit, getters }) {
       console.log(this.state.userToken);
       axios.defaults.headers.common["Authorization"] =
-        "Bearer " + this.state.user.userToken;
+        "Bearer " + state.userToken;
 
       if (getters.user) {
         axios
