@@ -10,7 +10,7 @@
 
     <v-container> 
       <v-layout justify-center>
-        <v-flex xs12 md6 >
+        <v-flex xs12 md4 >
           <h1 class="text-xs-center login-header text-uppercase">Login</h1>
           <form class="login-form">
             <v-text-field

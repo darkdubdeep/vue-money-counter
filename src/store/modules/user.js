@@ -1,4 +1,4 @@
-import axios from "axios";
+import api from "../../store/tools/api";
 
 export default {
   state: {
@@ -23,7 +23,7 @@ export default {
   actions: {
     register({ commit }, payload) {
       commit("setLoading", true);
-      axios
+      api
         .post("/register", {
           name: "empthy name",
           email: payload.username,
@@ -45,7 +45,7 @@ export default {
     },
     login({ commit }, payload) {
       commit("setLoading", true);
-      axios
+      api
         .post("/login", {
           username: payload.username,
           password: payload.password
@@ -69,12 +69,11 @@ export default {
         });
     },
     logout({ state, commit, getters }) {
-      console.log(this.state.userToken);
-      axios.defaults.headers.common["Authorization"] =
+      api.defaults.headers.common["Authorization"] =
         "Bearer " + state.userToken;
 
       if (getters.user) {
-        axios
+        api
           .post("/logout")
           .then(() => {
             commit("logout");

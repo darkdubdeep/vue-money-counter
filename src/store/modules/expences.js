@@ -1,4 +1,5 @@
 import axios from "axios";
+import api from "../../store/tools/api";
 
 export default {
   state: {
@@ -119,7 +120,7 @@ export default {
   actions: {
     getExpences({ commit }) {
       commit("setLoading", true);
-      axios
+      api
         .get(
           "/expences",
 
@@ -137,12 +138,11 @@ export default {
     },
     createExpence({ commit }, payload) {
       commit("setLoading", true);
-      axios
+      api
         .post(
           "/expences",
           {
             title: payload.title,
-            body: payload.title,
             summ: payload.summ,
             date: payload.date,
             comment: payload.comment
@@ -162,12 +162,11 @@ export default {
     saveChangesToEditedExpence({ commit }, payload) {
       commit("setLoading", true);
 
-      axios
+      api
         .put(
           "/expences" + "/" + payload.editedId,
           {
             title: payload.editedItem.title,
-            body: payload.editedItem.title,
             summ: payload.editedItem.summ,
             date: payload.editedItem.date,
             comment: payload.editedItem.comment
@@ -186,7 +185,7 @@ export default {
     },
     deleteExpence({ commit }, payload) {
       commit("setLoading", true);
-      axios
+      api
         .delete("/expences" + "/" + payload.id, {
           headers: { Authorization: `Bearer ${this.state.user.userToken}` }
         })
