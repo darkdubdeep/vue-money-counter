@@ -62,7 +62,12 @@
 
 <script>
 import { validationMixin } from "vuelidate";
-import { required, minLength, numeric } from "vuelidate/lib/validators";
+import {
+  required,
+  minLength,
+  maxLength,
+  numeric
+} from "vuelidate/lib/validators";
 
 export default {
   props: ["editedId"],
@@ -72,7 +77,7 @@ export default {
   validations: {
     editableItem: {
       title: { required },
-      summ: { required, numeric },
+      summ: { required, numeric, maxLength: maxLength(8) },
       date: { required },
       testParams: { required }
     }
@@ -92,6 +97,8 @@ export default {
       const errors = [];
       if (!this.$v.editableItem.summ.$dirty) return errors;
       !this.$v.editableItem.summ.numeric && errors.push("Must be a number");
+      !this.$v.editableItem.summ.maxLength &&
+        errors.push("Max lenght is 8 digits");
       !this.$v.editableItem.summ.required && errors.push("Summ is required");
       return errors;
     },

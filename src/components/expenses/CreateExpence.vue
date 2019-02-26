@@ -20,7 +20,7 @@
             <v-flex xs12 sm6 md4>
               <v-text-field
                 v-model="newExpence.summ"
-                label="Summ"
+                label="Sum"
                 :error-messages="summErrors"
                 @input="$v.newExpence.summ.$touch()"
                 @blur="$v.newExpence.summ.$touch()"
